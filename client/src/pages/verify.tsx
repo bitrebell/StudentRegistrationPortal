@@ -24,10 +24,10 @@ export default function Verify() {
       const res = await apiRequest("POST", "/api/verify", { email, code });
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: "Success",
-        description: "Email verified successfully"
+        description: data.message
       });
       navigate("/");
     },
@@ -48,19 +48,7 @@ export default function Verify() {
     onSuccess: (data) => {
       toast({
         title: "Code Resent",
-        description: (
-          <div className="mt-2">
-            <p>Please check your verification code at:</p>
-            <a 
-              href={data.previewUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-blue-500 hover:underline mt-2 block"
-            >
-              View Verification Email
-            </a>
-          </div>
-        )
+        description: data.message
       });
     },
     onError: (error: Error) => {

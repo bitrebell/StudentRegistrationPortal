@@ -36,19 +36,7 @@ export default function Register() {
     onSuccess: (data) => {
       toast({
         title: "Registration successful",
-        description: (
-          <div className="mt-2">
-            <p>Please check your verification code at:</p>
-            <a 
-              href={data.previewUrl} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="text-blue-500 hover:underline mt-2 block"
-            >
-              View Verification Email
-            </a>
-          </div>
-        )
+        description: data.message
       });
       navigate(`/verify?email=${encodeURIComponent(data.email)}`);
     },

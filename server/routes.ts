@@ -20,11 +20,10 @@ export async function registerRoutes(app: Express) {
 
       try {
         const student = await storage.createStudent(studentData);
-        const emailInfo = await sendVerificationEmail(student.email, student.verificationCode!);
+        await sendVerificationEmail(student.email, student.verificationCode!);
         return res.json({ 
           email: student.email,
-          previewUrl: emailInfo.previewUrl, 
-          message: "Registration successful. Check the preview URL to view your verification code."
+          message: "Registration successful. Please check your email for the verification code."
         });
       } catch (error) {
         console.error("Registration error:", error);
@@ -74,11 +73,10 @@ export async function registerRoutes(app: Express) {
 
       const newCode = generateOTP();
       await storage.updateVerificationCode(email, newCode);
-      const emailInfo = await sendVerificationEmail(email, newCode);
+      await sendVerificationEmail(email, newCode);
 
       res.json({ 
-        message: "Verification code resent",
-        previewUrl: emailInfo.previewUrl 
+        message: "Verification code has been sent to your email"
       });
     } catch (error) {
       console.error("Resend code error:", error);
