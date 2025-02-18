@@ -7,6 +7,9 @@ import { buttonVariants } from "@/components/ui/button"
 
 export type CalendarProps = React.ComponentProps<typeof DayPicker>
 
+const IconLeft = ({ ...props }) => <ChevronLeft className="h-4 w-4" />;
+const IconRight = ({ ...props }) => <ChevronRight className="h-4 w-4" />;
+
 function Calendar({
   className,
   classNames,
@@ -52,8 +55,8 @@ function Calendar({
         ...classNames,
       }}
       components={{
-        IconLeft: ({ ...props }) => <ChevronLeft className="h-4 w-4" />,
-        IconRight: ({ ...props }) => <ChevronRight className="h-4 w-4" />,
+        IconLeft: IconLeft,
+        IconRight: IconRight,
       }}
       {...props}
     />

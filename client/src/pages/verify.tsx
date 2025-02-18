@@ -14,11 +14,6 @@ export default function Verify() {
 
   const email = new URLSearchParams(window.location.search).get("email");
 
-  if (!email) {
-    navigate("/register");
-    return null;
-  }
-
   const { mutate: verify, isPending: isVerifying } = useMutation({
     mutationFn: async () => {
       const res = await apiRequest("POST", "/api/verify", { email, code });
@@ -59,6 +54,11 @@ export default function Verify() {
       });
     }
   });
+
+  if (!email) {
+    navigate("/register");
+    return null;
+  }
 
   return (
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
