@@ -11,6 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import { Link } from "wouter";
 
 export default function Register() {
   const { toast } = useToast();
@@ -151,6 +152,13 @@ export default function Register() {
               <Button type="submit" className="w-full" disabled={isPending}>
                 {isPending ? "Registering..." : "Register"}
               </Button>
+
+              <div className="text-center text-sm text-muted-foreground mt-4">
+                Already have an account?{" "}
+                <Link href="/login" className="text-primary hover:underline">
+                  Login here
+                </Link>
+              </div>
             </form>
           </Form>
         </CardContent>
