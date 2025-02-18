@@ -11,9 +11,9 @@ export default function Verify() {
   const [code, setCode] = useState("");
   const [, navigate] = useLocation();
   const { toast } = useToast();
-  
+
   const email = new URLSearchParams(window.location.search).get("email");
-  
+
   if (!email) {
     navigate("/register");
     return null;
@@ -45,10 +45,22 @@ export default function Verify() {
       const res = await apiRequest("POST", "/api/resend-code", { email });
       return res.json();
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
       toast({
         title: "Code Resent",
-        description: "Please check your email for the new code"
+        description: (
+          <div className="mt-2">
+            <p>Please check your verification code at:</p>
+            <a 
+              href={data.previewUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline mt-2 block"
+            >
+              View Verification Email
+            </a>
+          </div>
+        )
       });
     },
     onError: (error: Error) => {
@@ -72,7 +84,7 @@ export default function Verify() {
           <p className="text-center text-muted-foreground">
             We sent a verification code to <span className="font-medium">{email}</span>
           </p>
-          
+
           <div className="space-y-2">
             <Input
               type="text"

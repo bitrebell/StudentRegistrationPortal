@@ -20,8 +20,12 @@ export async function registerRoutes(app: Express) {
 
       try {
         const student = await storage.createStudent(studentData);
-        await sendVerificationEmail(student.email, student.verificationCode!);
-        return res.json({ email: student.email });
+        const emailInfo = await sendVerificationEmail(student.email, student.verificationCode!);
+        return res.json({ 
+          email: student.email,
+          previewUrl: emailInfo.previewUrl, 
+          message: "Registration successful. Check the preview URL to view your verification code."
+        });
       } catch (error) {
         console.error("Registration error:", error);
         return res.status(500).json({ message: "Failed to register student. Please try again later." });
@@ -70,9 +74,12 @@ export async function registerRoutes(app: Express) {
 
       const newCode = generateOTP();
       await storage.updateVerificationCode(email, newCode);
-      await sendVerificationEmail(email, newCode);
+      const emailInfo = await sendVerificationEmail(email, newCode);
 
-      res.json({ message: "Verification code resent" });
+      res.json({ 
+        message: "Verification code resent",
+        previewUrl: emailInfo.previewUrl 
+      });
     } catch (error) {
       console.error("Resend code error:", error);
       res.status(500).json({ message: "Failed to resend code. Please try again later." });

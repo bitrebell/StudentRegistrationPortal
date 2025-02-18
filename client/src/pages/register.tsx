@@ -15,7 +15,7 @@ import { apiRequest } from "@/lib/queryClient";
 export default function Register() {
   const { toast } = useToast();
   const [, navigate] = useLocation();
-  
+
   const form = useForm({
     resolver: zodResolver(insertStudentSchema),
     defaultValues: {
@@ -36,7 +36,19 @@ export default function Register() {
     onSuccess: (data) => {
       toast({
         title: "Registration successful",
-        description: "Please check your email for verification code"
+        description: (
+          <div className="mt-2">
+            <p>Please check your verification code at:</p>
+            <a 
+              href={data.previewUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline mt-2 block"
+            >
+              View Verification Email
+            </a>
+          </div>
+        )
       });
       navigate(`/verify?email=${encodeURIComponent(data.email)}`);
     },
@@ -73,7 +85,7 @@ export default function Register() {
                   </FormItem>
                 )}
               />
-              
+
               <FormField
                 control={form.control}
                 name="email"
