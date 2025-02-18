@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import Register from "@/pages/register";
 import Verify from "@/pages/verify";
+import Confirmation from "@/pages/confirmation";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -12,6 +13,7 @@ function Router() {
       <Route path="/" component={Register} />
       <Route path="/register" component={Register} />
       <Route path="/verify" component={Verify} />
+      <Route path="/confirmation" component={Confirmation} />
       <Route component={NotFound} />
     </Switch>
   );

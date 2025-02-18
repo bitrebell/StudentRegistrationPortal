@@ -29,7 +29,7 @@ export default function Verify() {
         title: "Success",
         description: data.message
       });
-      navigate("/");
+      navigate("/confirmation");
     },
     onError: (error: Error) => {
       toast({
