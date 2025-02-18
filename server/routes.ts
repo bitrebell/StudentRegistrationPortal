@@ -5,6 +5,13 @@ import { insertStudentSchema } from "@shared/schema";
 import { sendVerificationEmail, generateOTP, initializeEmailTransport } from "./email";
 import { ZodError } from "zod";
 
+// Add session type declaration
+declare module "express-session" {
+  interface SessionData {
+    studentId?: number;
+  }
+}
+
 export async function registerRoutes(app: Express) {
   // Initialize email transport
   await initializeEmailTransport();
@@ -57,6 +64,7 @@ export async function registerRoutes(app: Express) {
 
       // Set session data
       req.session.studentId = student.id;
+      await req.session.save();
 
       res.json({ message: "Login successful" });
     } catch (error) {
