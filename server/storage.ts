@@ -1,4 +1,6 @@
 import { students, type Student, type InsertStudent } from "@shared/schema";
+import { db } from "./db";
+import { eq } from "drizzle-orm";
 import { generateOTP } from "./email";
 
 export interface IStorage {
@@ -8,33 +10,27 @@ export interface IStorage {
   updateVerificationCode(email: string, code: string): Promise<void>;
 }
 
-export class MemStorage implements IStorage {
-  private students: Map<number, Student>;
-  private currentId: number;
-
-  constructor() {
-    this.students = new Map();
-    this.currentId = 1;
-  }
-
+export class DatabaseStorage implements IStorage {
   async createStudent(insertStudent: InsertStudent): Promise<Student> {
-    const id = this.currentId++;
     const verificationCode = generateOTP();
-    const student: Student = { 
-      ...insertStudent, 
-      id, 
-      verified: false,
-      verificationCode,
-      referralCode: insertStudent.referralCode || null
-    };
-    this.students.set(id, student);
+    const [student] = await db
+      .insert(students)
+      .values({
+        ...insertStudent,
+        verified: false,
+        verificationCode,
+        referralCode: insertStudent.referralCode || null
+      })
+      .returning();
     return student;
   }
 
   async getStudentByEmail(email: string): Promise<Student | undefined> {
-    return Array.from(this.students.values()).find(
-      (student) => student.email === email
-    );
+    const [student] = await db
+      .select()
+      .from(students)
+      .where(eq(students.email, email));
+    return student;
   }
 
   async verifyStudent(email: string, code: string): Promise<boolean> {
@@ -43,17 +39,23 @@ export class MemStorage implements IStorage {
       return false;
     }
 
-    student.verified = true;
-    student.verificationCode = null;
+    await db
+      .update(students)
+      .set({
+        verified: true,
+        verificationCode: null
+      })
+      .where(eq(students.email, email));
+
     return true;
   }
 
   async updateVerificationCode(email: string, code: string): Promise<void> {
-    const student = await this.getStudentByEmail(email);
-    if (student) {
-      student.verificationCode = code;
-    }
+    await db
+      .update(students)
+      .set({ verificationCode: code })
+      .where(eq(students.email, email));
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();
