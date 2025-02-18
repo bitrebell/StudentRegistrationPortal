@@ -38,6 +38,66 @@ export async function registerRoutes(app: Express) {
     }
   });
 
+  app.post("/api/login", async (req, res) => {
+    try {
+      const { email } = req.body;
+
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
+
+      const student = await storage.getStudentByEmail(email);
+      if (!student) {
+        return res.status(404).json({ message: "Student not found" });
+      }
+
+      if (!student.verified) {
+        return res.status(403).json({ message: "Please verify your email first" });
+      }
+
+      // Set session data
+      req.session.studentId = student.id;
+
+      res.json({ message: "Login successful" });
+    } catch (error) {
+      console.error("Login error:", error);
+      res.status(500).json({ message: "Failed to login. Please try again later." });
+    }
+  });
+
+  app.post("/api/logout", (req, res) => {
+    req.session.destroy((err) => {
+      if (err) {
+        console.error("Logout error:", err);
+        return res.status(500).json({ message: "Failed to logout" });
+      }
+      res.json({ message: "Logged out successfully" });
+    });
+  });
+
+  app.get("/api/student-info", async (req, res) => {
+    if (!req.session.studentId) {
+      return res.status(401).json({ message: "Not authenticated" });
+    }
+
+    try {
+      const student = await storage.getStudentById(req.session.studentId);
+      if (!student) {
+        return res.status(404).json({ message: "Student not found" });
+      }
+
+      res.json({
+        name: student.name,
+        email: student.email,
+        institution: student.institution,
+        needsAccommodation: student.needsAccommodation
+      });
+    } catch (error) {
+      console.error("Get student info error:", error);
+      res.status(500).json({ message: "Failed to get student information" });
+    }
+  });
+
   app.post("/api/verify", async (req, res) => {
     try {
       const { email, code } = req.body;
